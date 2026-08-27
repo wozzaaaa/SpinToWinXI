@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SpinToWin XI - Ultimate Test Cricket Draft</title>
+    <title>SpinToWin XI - Test Cricket Draft</title>
     <style>
         :root {
             --pitch-green: #1b4d3e;
@@ -14,47 +14,38 @@
             --ink-black: #111111;
             --paper-white: #f5f5f5;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background: var(--ink-black); color: var(--paper-white); padding: 10px; max-width: 600px; margin: 0 auto; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background: var(--ink-black); color: var(--paper-white); padding: 15px; max-width: 600px; margin: 0 auto; }
         header { text-align: center; padding: 15px 0; border-bottom: 2px solid var(--stadium-grass); margin-bottom: 15px; }
-        h1 { font-size: 1.8rem; color: var(--gold-accent); letter-spacing: 0.5px; }
-        .tagline { font-size: 0.75rem; color: var(--stadium-grass); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 4px; font-weight: bold; }
-        .screen { display: none; background: #1a1a1a; padding: 20px; border-radius: 8px; border: 1px solid #333; }
+        h1 { color: var(--gold-accent); }
+        .screen { display: none; background: #1a1a1a; padding: 20px; border-radius: 8px; border: 1px solid #333; margin-top: 10px; }
         .screen.active { display: block; }
         input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff; font-size: 1rem; }
-        button { background: var(--stadium-grass); color: white; font-weight: bold; border: none; cursor: pointer; transition: background 0.2s; }
+        button { background: var(--stadium-grass); color: white; font-weight: bold; border: none; cursor: pointer; }
         button:hover { background: var(--pitch-green); }
-        button:disabled { background: #444; cursor: not-allowed; opacity: 0.6; }
+        button:disabled { background: #444; cursor: not-allowed; opacity: 0.5; }
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 15px 0; }
         .slot-card { background: #222; padding: 10px; border-radius: 6px; border-left: 4px solid #555; font-size: 0.9rem; }
         .slot-card.filled { border-left-color: var(--gold-accent); background: #2d2d2d; }
         .wheel-container { text-align: center; margin: 15px 0; padding: 20px; background: #252525; border-radius: 8px; border: 2px dashed var(--gold-accent); }
-        .jackpot-alert { color: var(--gold-accent); font-weight: bold; animation: flash 1s infinite alternate; display: none; margin: 10px 0; }
-        @keyframes flash { from { opacity: 0.5; } to { opacity: 1; } }
-        .search-container { margin: 10px 0; }
         .options-list { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
-        .option-btn { background: #333; text-align: left; font-weight: normal; font-size: 0.9rem; }
-        .option-btn:hover { background: #444; }
-        .pitch-indicator { padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; margin: 15px 0; }
-        .pitch-indicator.green { background: var(--pitch-green); color: white; }
-        .pitch-indicator.flat { background: #b0c4de; color: #111; }
-        .pitch-indicator.dusty { background: var(--dusty-brown); color: #111; }
+        .option-btn { background: #333; text-align: left; }
+        .pitch-indicator { padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; margin: 15px 0; background: var(--pitch-green); }
         .hof-card { background: #2a2a2a; border: 1px solid var(--gold-accent); padding: 12px; margin: 10px 0; border-radius: 6px; }
-        .trait-tag { display: inline-block; background: var(--leather-red); color: white; font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; margin-right: 4px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <header>
         <h1>🏏 SpinToWin XI</h1>
-        <div class="tagline">The Ultimate Test Match Draft Simulator</div>
+        <p style="color: var(--stadium-grass); font-weight: bold;">The Ultimate Cricket Draft Simulator</p>
     </header>
 
     <!-- SETUP SCREEN -->
     <div id="setup-screen" class="screen active">
         <h2>Manager Profile Setup</h2>
         <label>Manager Name:</label>
-        <input type="text" id="mgr-name" placeholder="Enter your name..." value="G'day Skipper">
+        <input type="text" id="mgr-name" value="G'day Skipper">
         
         <label>Your Country:</label>
         <select id="mgr-team">
@@ -72,61 +63,50 @@
             <option value="West Indies">West Indies</option>
         </select>
         
-        <button onclick="startDraft()">Begin Draft Career</button>
-        <button onclick="showHOF()" style="background:#333; margin-top:15px;">View Hall of Fame</button>
+        <button id="start-btn" onclick="startDraft()">Begin Draft Career</button>
+        <button onclick="showHOF()" style="background:#333;">View Hall of Fame</button>
     </div>
 
     <!-- DRAFT SCREEN -->
     <div id="draft-screen" class="screen">
-        <h3 id="draft-title" style="color:var(--gold-accent); margin-bottom:10px;"></h3>
+        <h3 id="draft-title" style="color:var(--gold-accent);"></h3>
         <div class="wheel-container">
             <button id="spin-btn" onclick="spinWheel()">🎲 Spin Selection Wheel</button>
-            <div id="spin-result" style="margin-top:10px; font-weight:bold; font-size:1.1rem;"></div>
-            <div id="jackpot-box" class="jackpot-alert">⚡ RETRO LEGENDS JACKPOT DETECTED! ⚡</div>
+            <div id="spin-result" style="margin-top:10px; font-weight:bold;"></div>
         </div>
 
         <div id="selection-box" style="display:none;">
-            <h4>Available Picks (Strict Nation Sync):</h4>
-            <div class="search-container">
-                <input type="text" id="player-search" placeholder="🔍 Search current pool manually..." oninput="filterOptions()">
-            </div>
+            <h4>Available Picks:</h4>
             <div id="options-container" class="options-list"></div>
         </div>
 
         <h4>Your Current XI</h4>
         <div id="roster-grid" class="grid"></div>
-        <button id="sim-nav-btn" onclick="goToPress()" disabled style="margin-top:15px; background:var(--leather-red);">Advance to Series</button>
+        <button id="sim-nav-btn" onclick="goToPress()" disabled style="background:var(--leather-red);">Advance to Match Series</button>
     </div>
 
     <!-- PRESS CONFERENCE SCREEN -->
     <div id="press-screen" class="screen">
         <h2>🎤 Pre-Series Press Conference</h2>
         <p id="press-question" style="margin:15px 0; font-style:italic; background:#222; padding:15px; border-radius:6px;"></p>
-        <button onclick="answerPress(1)" id="press-opt1"></button>
-        <button onclick="answerPress(2)" id="press-opt2"></button>
+        <button onclick="answerPress(4)">Defend players publicly (+4 Squad Morale)</button>
+        <button onclick="answerPress(-2)">Demand higher work ethic (-2 Squad Morale)</button>
     </div>
 
     <!-- TOSS SCREEN -->
     <div id="toss-screen" class="screen">
-        <h2 id="trophy-title">🏅 The Trophy Match</h2>
-        <div id="pitch-view" class="pitch-indicator"></div>
+        <h2>コイン Toss Match Day</h2>
+        <div id="pitch-view" class="pitch-indicator">📋 Flat Batting Track (Bright Sunshine)</div>
         <h3>Call the Coin Toss</h3>
-        <div style="display:flex; gap:10px;">
-            <button onclick="executeToss('Heads')">🪙 Heads</button>
-            <button onclick="executeToss('Tails')">🪙 Tails</button>
-        </div>
+        <button onclick="executeToss()">🪙 Flip Coin</button>
         <div id="toss-result" style="margin:15px 0; font-weight:bold; text-align:center;"></div>
-        <div id="toss-choice-box" style="display:none;">
-            <button onclick="chooseTossAction('Bat First')">🏏 Elect to Bat First</button>
-            <button onclick="chooseTossAction('Bowl First')">🥎 Elect to Bowl First</button>
-        </div>
     </div>
 
     <!-- SIMULATION SCREEN -->
     <div id="sim-screen" class="screen">
-        <h2>🏏 Series Scorecard & Logs</h2>
-        <div id="simulation-logs" style="max-height:300px; overflow-y:auto; background:#111; padding:12px; font-family:monospace; font-size:0.85rem; border-radius:6px; margin:15px 0; line-height:1.4;"></div>
-        <button onclick="archiveAndFinish()">Complete Series & Save to Hall of Fame</button>
+        <h2> 🏏 Series Scorecard & Logs</h2>
+        <div id="simulation-logs" style="background:#111; padding:12px; font-family:monospace; border-radius:6px; margin:15px 0; max-height: 250px; overflow-y: auto;"></div>
+        <button onclick="archiveAndFinish()">Complete Campaign & Save Results</button>
     </div>
 
     <!-- HALL OF FAME SCREEN -->
@@ -138,40 +118,74 @@
 
     <script>
         let mgrName = "", mgrTeam = "", oppTeam = "", trophyName = "";
-        let currentSquad = [null, null, null, null, null, null, null, null, null, null, null];
-        let activePoolOptions = [];
+        let currentSquad = Array(11).fill(null);
         let moraleModifier = 0;
-        let pitchType = "flat";
-        let managerChoice = "";
 
         const slotDefinitions = [
-            { id: 0, label: "1. Opener (Pure Bat)" },
-            { id: 1, label: "2. Opener (Pure Bat)" },
-            { id: 2, label: "3. Top-Order Anchor" },
-            { id: 3, label: "4. Middle-Order Stroke" },
-            { id: 4, label: "5. Middle-Order Stroke" },
-            { id: 5, label: "6. Wicketkeeper (WK)" },
-            { id: 6, label: "7. All-Rounder" },
-            { id: 7, label: "8. All-Rounder" },
-            { id: 8, label: "9. Fast Bowler" },
-            { id: 9, label: "10. Fast Bowler" },
-            { id: 10, label: "11. Specialist Spinner" }
+            { id: 0, label: "1. Opener (Bat)", role: "Opener" },
+            { id: 1, label: "2. Opener (Bat)", role: "Opener" },
+            { id: 2, label: "3. Top-Order Anchor", role: "Middle" },
+            { id: 3, label: "4. Middle-Order Stroke", role: "Middle" },
+            { id: 4, label: "5. Middle-Order Stroke", role: "Middle" },
+            { id: 5, label: "6. Wicketkeeper (WK)", role: "WK" },
+            { id: 6, label: "7. All-Rounder", role: "AR" },
+            { id: 7, label: "8. All-Rounder", role: "AR" },
+            { id: 8, label: "9. Fast Bowler", role: "Pace" },
+            { id: 9, label: "10. Fast Bowler", role: "Pace" },
+            { id: 10, label: "11. Specialist Spinner", role: "Spin" }
         ];
 
-        const masterDatabase = {
-            "Australia_1960s": [
-                { name: "Bill Lawry", role: "Opener", rating: 89, country: "Australia" },
-                { name: "Bob Simpson", role: "Opener", rating: 90, country: "Australia" },
-                { name: "Ian Chappell", role: "Middle-Order", rating: 91, country: "Australia", traits: ["Captaincy Bonus"] },
-                { name: "Doug Walters", role: "Middle-Order", rating: 88, country: "Australia" },
-                { name: "Graham McKenzie", role: "Fast Bowler", rating: 89, country: "Australia" }
-            ],
-            "India_1970s": [
-                { name: "Sunil Gavaskar", role: "Opener", rating: 96, country: "India", traits: ["Clutch Performer"] },
-                { name: "Gundappa Viswanath", role: "Middle-Order", rating: 89, country: "India" },
-                { name: "Farokh Engineer", role: "Wicketkeeper", rating: 85, country: "India" },
-                { name: "Srinivas Venkataraghavan", role: "Specialist Spinner", rating: 87, country: "India" },
-                { name: "Bishan Singh Bedi", role: "Specialist Spinner", rating: 92, country: "India" }
-            ],
-            "West Indies_1980s": [
-                { name: "Gordon Greenidge", role: "Opener", rating: 93, country: "West Indies" },
+        // Solid, simplified database structure
+        const playersDatabase = [
+            { name: "Sir Don Bradman", role: "Middle", rating: 99, country: "Australia" },
+            { name: "Sunil Gavaskar", role: "Opener", rating: 95, country: "India" },
+            { name: "Sachin Tendulkar", role: "Middle", rating: 98, country: "India" },
+            { name: "Sir Viv Richards", role: "Middle", rating: 96, country: "West Indies" },
+            { name: "Brian Lara", role: "Middle", rating: 95, country: "West Indies" },
+            { name: "Adam Gilchrist", role: "WK", rating: 94, country: "Australia" },
+            { name: "MS Dhoni", role: "WK", rating: 92, country: "India" },
+            { name: "Sir Garfield Sobers", role: "AR", rating: 97, country: "West Indies" },
+            { name: "Jacques Kallis", role: "AR", rating: 96, country: "South Africa" },
+            { name: "Shane Warne", role: "Spin", rating: 95, country: "Australia" },
+            { name: "Muttiah Muralitharan", role: "Spin", rating: 96, country: "Sri Lanka" },
+            { name: "Glenn McGrath", role: "Pace", rating: 95, country: "Australia" },
+            { name: "Wasim Akram", role: "Pace", rating: 96, country: "Pakistan" },
+            { name: "James Anderson", role: "Pace", rating: 93, country: "England" },
+            { name: "Sir Alastair Cook", role: "Opener", rating: 91, country: "England" },
+            { name: "Matthew Hayden", role: "Opener", rating: 92, country: "Australia" }
+        ];
+
+        function renderRosterSlots() {
+            const grid = document.getElementById("roster-grid");
+            grid.innerHTML = "";
+            let filledCount = 0;
+
+            slotDefinitions.forEach(slot => {
+                const filled = currentSquad[slot.id];
+                const div = document.createElement("div");
+                div.className = `slot-card ${filled ? 'filled' : ''}`;
+                
+                if (filled) {
+                    div.innerHTML = `<strong>${slot.label}:</strong><br>${filled.name} (${filled.rating})`;
+                    filledCount++;
+                } else {
+                    div.innerHTML = `<strong>${slot.label}</strong><br><span style="color:#777;">Empty</span>`;
+                }
+                grid.appendChild(div);
+            });
+
+            document.getElementById("sim-nav-btn").disabled = (filledCount < 11);
+        }
+
+        function startDraft() {
+            mgrName = document.getElementById("mgr-name").value || "Skipper";
+            mgrTeam = document.getElementById("mgr-team").value;
+            oppTeam = document.getElementById("opp-team").value;
+
+            if (mgrTeam === oppTeam) {
+                alert("Please pick a different Opponent Country! You can't play against your own nation.");
+                return;
+            }
+
+            trophyName = "The World Test Championship Shield";
+            if ((mgrTeam === "Australia" && oppTeam === "England") || (mgrTeam === "England" && oppTeam === "Australia")) trophyName = "The Ashes";
