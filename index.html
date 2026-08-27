@@ -29,7 +29,9 @@
         .slot-card.filled { border-left-color: var(--gold-accent); background: #2d2d2d; }
         .wheel-container { text-align: center; margin: 15px 0; padding: 20px; background: #252525; border-radius: 8px; border: 2px dashed var(--gold-accent); }
         .options-list { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
-        .option-btn { background: #333; text-align: left; }
+        .option-item { background: #2a2a2a; border: 1px solid #444; padding: 10px; border-radius: 6px; margin-bottom: 8px; }
+        .option-item select { width: auto; display: inline-block; padding: 6px; margin: 0 10px; }
+        .option-item button { width: auto; display: inline-block; padding: 6px 12px; margin: 0; background: var(--leather-red); }
         .pitch-indicator { padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; margin: 15px 0; background: var(--pitch-green); }
         .hof-card { background: #2a2a2a; border: 1px solid var(--gold-accent); padding: 12px; margin: 10px 0; border-radius: 6px; }
     </style>
@@ -63,7 +65,7 @@
             <option value="West Indies">West Indies</option>
         </select>
         
-        <button id="start-btn" onclick="startDraft()">Begin Draft Career</button>
+        <button onclick="startDraft()">Begin Draft Career</button>
         <button onclick="showHOF()" style="background:#333;">View Hall of Fame</button>
     </div>
 
@@ -95,7 +97,7 @@
 
     <!-- TOSS SCREEN -->
     <div id="toss-screen" class="screen">
-        <h2>コイン Toss Match Day</h2>
+        <h2>Coin Toss Match Day</h2>
         <div id="pitch-view" class="pitch-indicator">📋 Flat Batting Track (Bright Sunshine)</div>
         <h3>Call the Coin Toss</h3>
         <button onclick="executeToss()">🪙 Flip Coin</button>
@@ -104,7 +106,7 @@
 
     <!-- SIMULATION SCREEN -->
     <div id="sim-screen" class="screen">
-        <h2> 🏏 Series Scorecard & Logs</h2>
+        <h2>🏏 Series Scorecard & Logs</h2>
         <div id="simulation-logs" style="background:#111; padding:12px; font-family:monospace; border-radius:6px; margin:15px 0; max-height: 250px; overflow-y: auto;"></div>
         <button onclick="archiveAndFinish()">Complete Campaign & Save Results</button>
     </div>
@@ -118,63 +120,62 @@
 
     <script>
         let mgrName = "", mgrTeam = "", oppTeam = "", trophyName = "";
-        let currentSquad = Array(11).fill(null);
+        
+        // Direct, non-nested state tracking to block script failures
+        let p0 = null, p1 = null, p2 = null, p3 = null, p4 = null, p5 = null, p6 = null, p7 = null, p8 = null, p9 = null, p10 = null;
         let moraleModifier = 0;
 
-        const slotDefinitions = [
-            { id: 0, label: "1. Opener (Bat)", role: "Opener" },
-            { id: 1, label: "2. Opener (Bat)", role: "Opener" },
-            { id: 2, label: "3. Top-Order Anchor", role: "Middle" },
-            { id: 3, label: "4. Middle-Order Stroke", role: "Middle" },
-            { id: 4, label: "5. Middle-Order Stroke", role: "Middle" },
-            { id: 5, label: "6. Wicketkeeper (WK)", role: "WK" },
-            { id: 6, label: "7. All-Rounder", role: "AR" },
-            { id: 7, label: "8. All-Rounder", role: "AR" },
-            { id: 8, label: "9. Fast Bowler", role: "Pace" },
-            { id: 9, label: "10. Fast Bowler", role: "Pace" },
-            { id: 10, label: "11. Specialist Spinner", role: "Spin" }
-        ];
-
-        // Solid, simplified database structure
         const playersDatabase = [
-            { name: "Sir Don Bradman", role: "Middle", rating: 99, country: "Australia" },
-            { name: "Sunil Gavaskar", role: "Opener", rating: 95, country: "India" },
-            { name: "Sachin Tendulkar", role: "Middle", rating: 98, country: "India" },
-            { name: "Sir Viv Richards", role: "Middle", rating: 96, country: "West Indies" },
-            { name: "Brian Lara", role: "Middle", rating: 95, country: "West Indies" },
-            { name: "Adam Gilchrist", role: "WK", rating: 94, country: "Australia" },
-            { name: "MS Dhoni", role: "WK", rating: 92, country: "India" },
-            { name: "Sir Garfield Sobers", role: "AR", rating: 97, country: "West Indies" },
-            { name: "Jacques Kallis", role: "AR", rating: 96, country: "South Africa" },
-            { name: "Shane Warne", role: "Spin", rating: 95, country: "Australia" },
-            { name: "Muttiah Muralitharan", role: "Spin", rating: 96, country: "Sri Lanka" },
-            { name: "Glenn McGrath", role: "Pace", rating: 95, country: "Australia" },
-            { name: "Wasim Akram", role: "Pace", rating: 96, country: "Pakistan" },
-            { name: "James Anderson", role: "Pace", rating: 93, country: "England" },
-            { name: "Sir Alastair Cook", role: "Opener", rating: 91, country: "England" },
-            { name: "Matthew Hayden", role: "Opener", rating: 92, country: "Australia" }
+            { name: "Sir Don Bradman", rating: 99, country: "Australia" },
+            { name: "Sunil Gavaskar", rating: 95, country: "India" },
+            { name: "Sachin Tendulkar", rating: 98, country: "India" },
+            { name: "Sir Viv Richards", rating: 96, country: "West Indies" },
+            { name: "Brian Lara", rating: 95, country: "West Indies" },
+            { name: "Adam Gilchrist", rating: 94, country: "Australia" },
+            { name: "MS Dhoni", rating: 92, country: "India" },
+            { name: "Sir Garfield Sobers", rating: 97, country: "West Indies" },
+            { name: "Jacques Kallis", rating: 96, country: "South Africa" },
+            { name: "Shane Warne", rating: 95, country: "Australia" },
+            { name: "Muttiah Muralitharan", rating: 96, country: "Sri Lanka" },
+            { name: "Glenn McGrath", rating: 95, country: "Australia" },
+            { name: "Wasim Akram", rating: 96, country: "Pakistan" },
+            { name: "James Anderson", rating: 93, country: "England" },
+            { name: "Sir Alastair Cook", rating: 91, country: "England" },
+            { name: "Matthew Hayden", rating: 92, country: "Australia" }
         ];
 
         function renderRosterSlots() {
             const grid = document.getElementById("roster-grid");
             grid.innerHTML = "";
-            let filledCount = 0;
 
-            slotDefinitions.forEach(slot => {
-                const filled = currentSquad[slot.id];
+            let slots = [
+                { val: p0, label: "1. Opener (Bat)" },
+                { val: p1, label: "2. Opener (Bat)" },
+                { val: p2, label: "3. Top-Order Anchor" },
+                { val: p3, label: "4. Middle-Order Stroke" },
+                { val: p4, label: "5. Middle-Order Stroke" },
+                { val: p5, label: "6. Wicketkeeper (WK)" },
+                { val: p6, label: "7. All-Rounder" },
+                { val: p7, label: "8. All-Rounder" },
+                { val: p8, label: "9. Fast Bowler" },
+                { val: p9, label: "10. Fast Bowler" },
+                { val: p10, label: "11. Specialist Spinner" }
+            ];
+
+            let count = 0;
+            slots.forEach(s => {
                 const div = document.createElement("div");
-                div.className = `slot-card ${filled ? 'filled' : ''}`;
-                
-                if (filled) {
-                    div.innerHTML = `<strong>${slot.label}:</strong><br>${filled.name} (${filled.rating})`;
-                    filledCount++;
+                div.className = "slot-card " + (s.val ? "filled" : "");
+                if (s.val) {
+                    div.innerHTML = "<strong>" + s.label + ":</strong><br>" + s.val.name + " (" + s.val.rating + ")";
+                    count++;
                 } else {
-                    div.innerHTML = `<strong>${slot.label}</strong><br><span style="color:#777;">Empty</span>`;
+                    div.innerHTML = "<strong>" + s.label + "</strong><br><span style='color:#777;'>Empty</span>";
                 }
                 grid.appendChild(div);
             });
 
-            document.getElementById("sim-nav-btn").disabled = (filledCount < 11);
+            document.getElementById("sim-nav-btn").disabled = (count < 11);
         }
 
         function startDraft() {
