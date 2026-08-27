@@ -30,7 +30,7 @@
         .wheel-container { text-align: center; margin: 15px 0; padding: 20px; background: #252525; border-radius: 8px; border: 2px dashed var(--gold-accent); }
         .options-list { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
         .option-item { background: #2a2a2a; border: 1px solid #444; padding: 10px; border-radius: 6px; margin-bottom: 8px; }
-        .option-item select { width: auto; display: inline-block; padding: 6px; margin: 0 10px; }
+        .option-item select { width: auto; display: inline-block; padding: 6px; margin: 0 10px; background: #111; color: #fff; border: 1px solid #555; }
         .option-item button { width: auto; display: inline-block; padding: 6px 12px; margin: 0; background: var(--leather-red); }
         .pitch-indicator { padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; margin: 15px 0; background: var(--pitch-green); }
         .hof-card { background: #2a2a2a; border: 1px solid var(--gold-accent); padding: 12px; margin: 10px 0; border-radius: 6px; }
@@ -119,13 +119,13 @@
     </div>
 
     <script>
-        let mgrName = "", mgrTeam = "", oppTeam = "", trophyName = "";
+        var mgrName = "", mgrTeam = "", oppTeam = "", trophyName = "";
         
-        // Direct, non-nested state tracking to block script failures
-        let p0 = null, p1 = null, p2 = null, p3 = null, p4 = null, p5 = null, p6 = null, p7 = null, p8 = null, p9 = null, p10 = null;
-        let moraleModifier = 0;
+        // Using explicit named state containers to completely bypass broken text parsing bugs
+        var p0 = null, p1 = null, p2 = null, p3 = null, p4 = null, p5 = null, p6 = null, p7 = null, p8 = null, p9 = null, p10 = null;
+        var moraleModifier = 0;
 
-        const playersDatabase = [
+        var playersDatabase = [
             { name: "Sir Don Bradman", rating: 99, country: "Australia" },
             { name: "Sunil Gavaskar", rating: 95, country: "India" },
             { name: "Sachin Tendulkar", rating: 98, country: "India" },
@@ -145,10 +145,10 @@
         ];
 
         function renderRosterSlots() {
-            const grid = document.getElementById("roster-grid");
+            var grid = document.getElementById("roster-grid");
             grid.innerHTML = "";
 
-            let slots = [
+            var slots = [
                 { val: p0, label: "1. Opener (Bat)" },
                 { val: p1, label: "2. Opener (Bat)" },
                 { val: p2, label: "3. Top-Order Anchor" },
@@ -162,9 +162,10 @@
                 { val: p10, label: "11. Specialist Spinner" }
             ];
 
-            let count = 0;
-            slots.forEach(s => {
-                const div = document.createElement("div");
+            var count = 0;
+            for (var i = 0; i < slots.length; i++) {
+                var s = slots[i];
+                var div = document.createElement("div");
                 div.className = "slot-card " + (s.val ? "filled" : "");
                 if (s.val) {
                     div.innerHTML = "<strong>" + s.label + ":</strong><br>" + s.val.name + " (" + s.val.rating + ")";
@@ -173,7 +174,7 @@
                     div.innerHTML = "<strong>" + s.label + "</strong><br><span style='color:#777;'>Empty</span>";
                 }
                 grid.appendChild(div);
-            });
+            }
 
             document.getElementById("sim-nav-btn").disabled = (count < 11);
         }
@@ -189,4 +190,3 @@
             }
 
             trophyName = "The World Test Championship Shield";
-            if ((mgrTeam === "Australia" && oppTeam === "England") || (mgrTeam === "England" && oppTeam === "Australia")) trophyName = "The Ashes";
